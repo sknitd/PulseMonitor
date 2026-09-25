@@ -1,0 +1,12 @@
+# macOS metadata and local build products
+.DS_Store
+DerivedData/
+build/
+*.dSYM/
+
+# Generated app bundles and distribution archives
+/dist/
+
+# Local visual QA captures and generated test summaries
+/tests/screenshots/
+/tests/*-report.json

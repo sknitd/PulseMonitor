@@ -1,0 +1,18 @@
+// Deterministic visual-test fixture. Never loaded inside the native application.
+(() => {
+if(window.webkit?.messageHandlers?.pulse)return;
+const GiB=1024**3,now=1790265000;
+const specs=[['Google Chrome',4.38,88.6,94],['Visual Studio Code',1.84,19.4,32],['Safari',1.16,6.1,16],['Docker',.92,12.3,11],['Slack',.72,1.8,18],['Terminal',.69,29.2,14],['Figma',.48,3.1,4],['Zoom',.44,.6,7],['Pulse Monitor',.12,1.7,3],['System & background',.43,13.2,84]];
+let nextPid=101;
+const apps=specs.map(([name,gib,cpu,count])=>{
+ const path=name==='System & background'?'':`/Applications/${name}.app`,root=nextPid;
+ const processes=Array.from({length:count},(_,i)=>({pid:nextPid++,ppid:i?root:1,uid:501,cpu:cpu/count,memory:gib*GiB/count,rss:gib*GiB/count*1.05,footprint:i%15!==14,elapsed:'02:14:09',start:'Thu Sep 24 10:03:19 2026',path:path?`${path}/Contents/MacOS/${name}${i?' Helper':''}`:'/usr/libexec/service',name:name+(i?' Helper':''),appKey:path||'__background__'}));
+ return {id:path||'__background__',path,name,cpu,memory:gib*GiB,rss:gib*GiB*1.05,processes,count,fallbackCount:Math.floor(count/15),rootPID:path?root:0,quitAllowed:Boolean(path&&root>1&&!['finder','dock','windowserver','loginwindow','systemuiserver','controlcenter','pulse monitor'].includes(name.toLowerCase()))};
+});
+const projects=[['storefront-web','node',[3000,9229],458,2600],['scraper-api','python3',[8000],412,1900],['marketing-site','node',[4321],298,960],['docs','node',[5173],188,0],['ml-notebooks','python3',[8888],164,1300],['design-tokens','node',[6006],121,120],['auth-service','go',[8080],74,0]].map((p,i)=>({pid:nextPid+i,name:p[0],runtime:p[1],ports:p[2],memory:p[3]*1024**2,lowSeconds:p[4],cpu:p[4]?0.2:5.4,cwd:`/Users/demo/Projects/${p[0]}`,path:`/opt/homebrew/bin/${p[1]}`,start:'Thu Sep 24 09:14:20 2026',elapsed:'03:52:41'}));
+const history=Array.from({length:120},(_,i)=>({t:now-240+i*2,cpu:22+Math.sin(i*.22)*6+Math.sin(i*.8)*2,memory:(12.2+i*.003+Math.sin(i*.13)*.15)*GiB,network:150000+Math.sin(i*.17)*90000+Math.cos(i*.6)*20000,upload:27000+Math.sin(i*.12)*14000,gpu:16+Math.sin(i*.21)*12,battery:76-i*.02,disk:800000+Math.sin(i*.4)*650000}));
+const snapshot={timestamp:now,uptime:273960,host:'Preview Mac',model:'MacBook Pro',chip:'Apple M3 Pro',os:'macOS 14.4',cpu:{available:true,usage:27,user:19,system:8,idle:73,cores:12,load1:3.41,load5:2.67,load15:2.04},memory:{available:true,total:18*GiB,used:12.63*GiB,app:8.81*GiB,wired:2.14*GiB,compressed:1.68*GiB,cached:3.82*GiB,free:5.37*GiB,physicalFree:1.55*GiB,swap:0,pressure:'Normal'},disk:{available:true,total:994660000000,free:479720000000,used:514940000000,read:279000,write:185000,volume:'/Users/demo',ioAvailable:true},network:{available:true,download:312000,upload:41900,received:4400000000,sent:820000000,interfaces:['en0']},battery:{available:true,percent:74,charging:false,pluggedIn:false,minutes:226,cycles:184,health:96,watts:null},gpu:{available:true,usage:28,name:'Apple M3 Pro',unified:true},thermal:0,apps,appCount:apps.length-1,processCount:apps.reduce((t,a)=>t+a.count,0),projects,processesAvailable:true,version:'1.0.0'};
+const settings={interval:2,theme:'light',alerts:true,cpuThreshold:80,cpuDuration:60,growthMB:512,hideDock:false,launchAtLogin:false};
+window.PulseDemoFixture={snapshot,history,settings,paused:false,icons:{},alerts:[{title:'Slack memory use is growing',body:'Up 624 MiB over about five minutes. This is a growth warning, not a confirmed memory leak.',time:now-640,key:'slack:memory'},{title:'Google Chrome is keeping the CPU busy',body:'Above 80% of one CPU core for at least 60 seconds. Review it before quitting.',time:now-1260,key:'chrome:cpu'}]};
+window.Pulse.receive(window.PulseDemoFixture);
+})();
