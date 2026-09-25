@@ -6,7 +6,7 @@ Pulse Monitor is an independent macOS system-monitoring app built from this sour
 
 - macOS 13 or later. The bundled executable contains arm64 and x86_64 slices.
 - The app itself has no third-party runtime dependency. Building from source needs Xcode Command Line Tools and the macOS SDK.
-- Unzip `PulseMonitor-macOS13-Universal.zip`, then move `Pulse Monitor.app` to `/Applications` or `~/Applications` if desired.
+- Build and package the app from source using the commands below. Then unzip `dist/PulseMonitor-macOS13-Universal.zip` and move `Pulse Monitor.app` to `/Applications` or `~/Applications` if desired.
 
 This build is ad-hoc signed. No Developer ID identity was available and it has not been notarized. The recorded Gatekeeper assessment rejected the bundle. A local ad-hoc signature proves only that the bundle's code matches its signature; it does not identify a publisher. Review the source and QA report before deciding whether to open it. Do not disable Gatekeeper or remove quarantine attributes to make it run. Apple's supported user decision flow is described in [Open an app from an unidentified developer](https://support.apple.com/en-us/102445).
 
@@ -53,9 +53,11 @@ Settings are stored in macOS preferences. Up to 600 history points and 50 alerts
 
 ## Build and package
 
-From this directory on a Mac with Xcode Command Line Tools:
+Clone the repository and build on a Mac with Xcode Command Line Tools:
 
 ```bash
+git clone https://github.com/sknitd/PulseMonitor.git
+cd PulseMonitor
 bash build-mac.sh
 bash package-mac.sh
 ```
